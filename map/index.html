@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Leaflet Quick Start Guide Example</title>
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+  </head>
+  <body>
+    <div id="map" style="width: 800px; height: 600px"></div>
+
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+    <script>
+
+      var map = L.map('map').setView([-37.814, 144.962], 15);
+
+      L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
+          maxZoom: 18,
+          attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+          '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+          'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+          id: 'examples.map-i86knfo3'
+          }).addTo(map);
+      var popup = L.popup();
+
+      function onMapClick(e) {
+        popup
+          .setLatLng(e.latlng)
+          .setContent("You clicked the map at " + e.latlng.toString())
+          .openOn(map);
+      }
+
+      map.on('click', onMapClick);
+
+      $.getJSON('http://data.melbourne.vic.gov.au/resource/pmhb-s6pn.json?$where=accessibility_rating=1+AND+suburb=%27KENSINGTON%27', function(data) {
+
+        var row;
+        for (row in data) {
+          var metadata = "";
+            if (data[row].building_name)
+              {metadata += "Building name: " + data[row].building_name + "<br>"; }
+            metadata += "<br>" + "Street address: " + data[row].street_address + "</br>";
+            metadata += "<br>" + "Accessibility type: " + data[row].accessibility_type + "</br>";
+            metadata += "<br>" + "Accessibility rating: " + data[row].accessibility_rating + "</br>";
+
+          L.marker(
+          [
+          data[row].latitude,
+          data[row].longitude
+          ]).addTo(map).bindPopup(
+          "<b>" + metadata + "</b>").openPopup();
+        }});
+
+
+
+    </script>
+  </body>
+</html>
